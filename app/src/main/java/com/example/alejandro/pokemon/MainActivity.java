@@ -1,10 +1,12 @@
 package com.example.alejandro.pokemon;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 
 import com.example.alejandro.pokemon.models.Pokemon;
 import com.example.alejandro.pokemon.models.PokemonResponse;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private int offset;
 
     private boolean readyToRefresh;
+    ArrayList<Pokemon> listPokemon;
 
     Retrofit retrofit;
 
@@ -93,17 +96,42 @@ public class MainActivity extends AppCompatActivity {
         pokemonResponseCall.enqueue(new Callback<PokemonResponse>() {
             @Override
             public void onResponse(Call<PokemonResponse> call, Response<PokemonResponse> response) {
+                Log.d(TAG, response.body().getResults().toString());
 
                 readyToRefresh = true;
                 if (response.isSuccessful()){
                     PokemonResponse pokemonResponse = response.body();
-                    ArrayList<Pokemon> listPokemon = pokemonResponse.getResults();
+                    listPokemon = pokemonResponse.getResults();
 
                     adaptadorPokemon.addListPokemon(listPokemon);
 
                 } else {
                     Log.e(TAG, "onResponse: " + response.errorBody());
                 }
+
+//                for (Pokemon pokemon : listPokemon) {
+////                    Log.d(TAG, "\n" + pokemon);
+//                    pokemon.setNumber(pokemon.getNumber());
+//                    Log.d(TAG, "\n" + pokemon);
+//                }
+
+                adaptadorPokemon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        try {
+                            Log.d(TAG, "Click: Posicion del layout " + mRecyclerView.getChildLayoutPosition(view));
+                            int pokedexNumber = mRecyclerView.getChildAdapterPosition(view);
+                            Pokemon pokemon = listPokemon.get(pokedexNumber);
+                            Log.d(TAG, "Nombre: " + pokemon.getName());
+                            Intent intent = new Intent(MainActivity.this, PokeInfo.class);
+                            intent.putExtra("pokeNum", pokedexNumber);
+                            intent.putExtra("pokeName", pokemon.getName());
+                            startActivity(intent);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
 
             @Override

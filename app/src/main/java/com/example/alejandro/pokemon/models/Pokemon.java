@@ -8,6 +8,12 @@ public class Pokemon {
     private String name;
     private String url;
 
+    public Pokemon() {
+    }
+
+    public Pokemon(int number) {
+    }
+
     public String getName() {
         return name;
     }
@@ -31,5 +37,14 @@ public class Pokemon {
 
     public void setNumber(int number) {
         this.number = number;
+    }
+
+    @Override
+    public String toString() {
+        return "Pokemon{" +
+                "number=" + number +
+                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                '}';
     }
 }

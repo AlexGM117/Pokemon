@@ -18,10 +18,11 @@ import java.util.ArrayList;
 /**
  * Created by alejandro on 04/08/16.
  */
-public class AdaptadorPokemon extends RecyclerView.Adapter<AdaptadorPokemon.ViewHolder> {
+public class AdaptadorPokemon extends RecyclerView.Adapter<AdaptadorPokemon.ViewHolder> implements View.OnClickListener {
 
     private ArrayList<Pokemon> podedex;
     private Context contexto;
+    private View.OnClickListener listener;
 
     public AdaptadorPokemon(Context contexto) {
         this.contexto = contexto;
@@ -31,7 +32,7 @@ public class AdaptadorPokemon extends RecyclerView.Adapter<AdaptadorPokemon.View
     @Override
     public AdaptadorPokemon.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pokemon, parent, false);
-
+        view.setOnClickListener(this);
         return new ViewHolder(view);
     }
 
@@ -46,6 +47,7 @@ public class AdaptadorPokemon extends RecyclerView.Adapter<AdaptadorPokemon.View
                 .crossFade()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.mImageView);
+        pokemon.setNumber(pokemon.getNumber());
     }
 
     @Override
@@ -56,6 +58,18 @@ public class AdaptadorPokemon extends RecyclerView.Adapter<AdaptadorPokemon.View
     public void addListPokemon(ArrayList<Pokemon> listPokemon) {
         podedex.addAll(listPokemon);
         notifyDataSetChanged();
+    }
+
+    public void setOnClickListener(View.OnClickListener listener){
+        this.listener = listener;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (listener != null){
+            listener.onClick(view);
+            view.setSelected(true);
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
