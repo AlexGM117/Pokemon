@@ -11,9 +11,6 @@ public class Pokemon {
     public Pokemon() {
     }
 
-    public Pokemon(int number) {
-    }
-
     public String getName() {
         return name;
     }

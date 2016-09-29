@@ -1,10 +1,13 @@
 package com.example.alejandro.pokemon.pokeapi;
 
+import com.example.alejandro.pokemon.models.PokemonDetails;
 import com.example.alejandro.pokemon.models.PokemonResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 
 /**
  * Created by alejandro on 04/08/16.
@@ -15,4 +18,7 @@ public interface PokemonService {
         // http://pokeapi.co/api/v2/pokemon/?limit=20&offset=20 en este caso limit y offset
     //que indican cuantos elementos se muestran
     Call<PokemonResponse> getPokemonList(@Query("limit") int limit, @Query("offset") int offset);
+
+    @GET("pokemon/{id}")
+    Call<PokemonDetails> getPokemonDetails(@Path("id") int id);
 }

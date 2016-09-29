@@ -47,7 +47,6 @@ public class AdaptadorPokemon extends RecyclerView.Adapter<AdaptadorPokemon.View
                 .crossFade()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.mImageView);
-        pokemon.setNumber(pokemon.getNumber());
     }
 
     @Override

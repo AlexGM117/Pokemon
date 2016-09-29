@@ -13,6 +13,9 @@ import com.example.alejandro.pokemon.models.PokemonResponse;
 import com.example.alejandro.pokemon.pokeapi.PokemonService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -34,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean readyToRefresh;
     ArrayList<Pokemon> listPokemon;
-
+    Map<Integer, String> mapPokemon = new TreeMap<Integer, String>();
     Retrofit retrofit;
 
     @Override
@@ -92,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
     private void obtenerDatos(int offset) {
         PokemonService service = retrofit.create(PokemonService.class);
         Call<PokemonResponse> pokemonResponseCall = service.getPokemonList(20, offset);
-
         pokemonResponseCall.enqueue(new Callback<PokemonResponse>() {
             @Override
             public void onResponse(Call<PokemonResponse> call, Response<PokemonResponse> response) {
@@ -102,33 +104,39 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()){
                     PokemonResponse pokemonResponse = response.body();
                     listPokemon = pokemonResponse.getResults();
-
+                    for (Pokemon poke : listPokemon) {
+                        poke.setNumber(poke.getNumber());
+                        Log.d(TAG, "\n" + poke);
+                        mapPokemon.put(poke.getNumber(), poke.getName());
+                    }
+                    Log.d(TAG,"Map Values " + "\n" + mapPokemon.values() + "\n" + mapPokemon.size());
                     adaptadorPokemon.addListPokemon(listPokemon);
 
                 } else {
                     Log.e(TAG, "onResponse: " + response.errorBody());
                 }
 
-//                for (Pokemon pokemon : listPokemon) {
-////                    Log.d(TAG, "\n" + pokemon);
-//                    pokemon.setNumber(pokemon.getNumber());
-//                    Log.d(TAG, "\n" + pokemon);
-//                }
-
                 adaptadorPokemon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         try {
                             Log.d(TAG, "Click: Posicion del layout " + mRecyclerView.getChildLayoutPosition(view));
-                            int pokedexNumber = mRecyclerView.getChildAdapterPosition(view);
-                            Pokemon pokemon = listPokemon.get(pokedexNumber);
-                            Log.d(TAG, "Nombre: " + pokemon.getName());
                             Intent intent = new Intent(MainActivity.this, PokeInfo.class);
-                            intent.putExtra("pokeNum", pokedexNumber);
-                            intent.putExtra("pokeName", pokemon.getName());
+                            int pokedexNumber = mRecyclerView.getChildAdapterPosition(view) + 1;
+                            if (pokedexNumber > 721){
+                                pokedexNumber = pokedexNumber + 9279;
+                                String pokedexName = mapPokemon.get(pokedexNumber);
+                                intent.putExtra("pokeNum", pokedexNumber);
+                                intent.putExtra("pokeName", pokedexName);
+                            }else{
+                                String pokedexName = mapPokemon.get(pokedexNumber);
+                                intent.putExtra("pokeNum", pokedexNumber);
+                                intent.putExtra("pokeName", pokedexName);
+                            }
                             startActivity(intent);
                         }catch (Exception e){
                             e.printStackTrace();
+                        }finally {
                         }
                     }
                 });
